@@ -339,96 +339,140 @@
     const BILLING_SERVICE_URL = "https://web-production-79cdc.up.railway.app";
     // =========================================================
 
+    const ADDON_LABELS = { contact_center: "Contact Center" };
+
     const params = new URLSearchParams(window.location.search);
     const clientId = params.get("cliente");
+    const addon = params.get("addon") || null;
 
     const clienteInfo = document.getElementById("clienteInfo");
     const mensaje = document.getElementById("mensaje");
     const submitBtn = document.getElementById("submitBtn");
+    const cryptoBtn = document.getElementById("cryptoBtn");
+
+    // Textos de los botones — se recalculan una vez que sabemos el precio
+    // real (ver cargarPrecioYArmarFormulario más abajo). Arrancan con estos
+    // valores genéricos por si /pricing tarda o falla.
+    let tarjetaBtnLabel = "Confirmar suscripción";
+    let cryptoBtnLabel = "Pagar con cripto";
 
     if (!clientId) {
       clienteInfo.textContent = "Falta el parámetro ?cliente= en la URL.";
       submitBtn.disabled = true;
+      cryptoBtn.disabled = true;
     } else {
-      clienteInfo.innerHTML = '<span class="dot"></span>Suscripción para: ' + clientId;
+      const addonTxt = addon ? ` + ${ADDON_LABELS[addon] || addon}` : "";
+      clienteInfo.innerHTML = '<span class="dot"></span>Suscripción para: ' + clientId + addonTxt;
     }
 
     const mp = new MercadoPago(MERCADOPAGO_PUBLIC_KEY, { locale: "es-CO" });
+    let cardForm = null;
 
-    const cardForm = mp.cardForm({
-      amount: "200000",
-      iframe: true,
-      form: {
-        id: "cardForm",
-        cardholderName: { id: "cardholderName" },
-        cardholderEmail: { id: "cardholderEmail" },
-        cardNumber: { id: "form-checkout__cardNumber" },
-        expirationDate: { id: "form-checkout__expirationDate" },
-        securityCode: { id: "form-checkout__securityCode" },
-        identificationNumber: { id: "identificationNumber" },
-        installments: { id: "form-checkout__installments" },
-        issuer: { id: "form-checkout__issuer" },
-      },
-      callbacks: {
-        onFormMounted: (error) => {
-          if (error) {
-            console.error("Error al montar el formulario:", error);
-            mensaje.textContent = "No se pudo cargar el formulario de pago.";
-            mensaje.className = "error";
-            return;
-          }
-          console.log("Formulario de tarjeta montado correctamente");
+    function initCardForm(totalCop) {
+      cardForm = mp.cardForm({
+        amount: String(totalCop),
+        iframe: true,
+        form: {
+          id: "cardForm",
+          cardholderName: { id: "cardholderName" },
+          cardholderEmail: { id: "cardholderEmail" },
+          cardNumber: { id: "form-checkout__cardNumber" },
+          expirationDate: { id: "form-checkout__expirationDate" },
+          securityCode: { id: "form-checkout__securityCode" },
+          identificationNumber: { id: "identificationNumber" },
+          installments: { id: "form-checkout__installments" },
+          issuer: { id: "form-checkout__issuer" },
         },
-        onSubmit: async (event) => {
-          event.preventDefault();
-          submitBtn.disabled = true;
-          submitBtn.textContent = "Procesando...";
-          mensaje.textContent = "";
-          mensaje.className = "";
+        callbacks: {
+          onFormMounted: (error) => {
+            if (error) {
+              console.error("Error al montar el formulario:", error);
+              mensaje.textContent = "No se pudo cargar el formulario de pago.";
+              mensaje.className = "error";
+              return;
+            }
+            console.log("Formulario de tarjeta montado correctamente");
+          },
+          onSubmit: async (event) => {
+            event.preventDefault();
+            submitBtn.disabled = true;
+            submitBtn.textContent = "Procesando...";
+            mensaje.textContent = "";
+            mensaje.className = "";
 
-          try {
-            const cardData = await cardForm.createCardToken();
-            const payerEmail = document.getElementById("cardholderEmail").value;
+            try {
+              const cardData = await cardForm.createCardToken();
+              const payerEmail = document.getElementById("cardholderEmail").value;
 
-            const resp = await fetch(BILLING_SERVICE_URL + "/subscribe", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                client_id: clientId,
-                payer_email: payerEmail,
-                card_token_id: cardData.token,
-              }),
-            });
+              const resp = await fetch(BILLING_SERVICE_URL + "/subscribe", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  client_id: clientId,
+                  payer_email: payerEmail,
+                  card_token_id: cardData.token,
+                  addon: addon || undefined,
+                }),
+              });
 
-            const result = await resp.json();
+              const result = await resp.json();
 
-            if (resp.ok && result.ok) {
-              mensaje.textContent = "¡Listo! Tu suscripción quedó activa.";
-              mensaje.className = "exito";
-              submitBtn.style.display = "none";
-            } else {
-              mensaje.textContent = "No se pudo completar: " + (result.error || "error desconocido");
+              if (resp.ok && result.ok) {
+                mensaje.textContent = "¡Listo! Tu suscripción quedó activa.";
+                mensaje.className = "exito";
+                submitBtn.style.display = "none";
+              } else {
+                mensaje.textContent = "No se pudo completar: " + (result.error || "error desconocido");
+                mensaje.className = "error";
+                submitBtn.disabled = false;
+                submitBtn.textContent = "Reintentar";
+              }
+            } catch (err) {
+              mensaje.textContent = "Error al procesar la tarjeta. Verifica los datos.";
               mensaje.className = "error";
               submitBtn.disabled = false;
               submitBtn.textContent = "Reintentar";
             }
-          } catch (err) {
-            mensaje.textContent = "Error al procesar la tarjeta. Verifica los datos.";
-            mensaje.className = "error";
-            submitBtn.disabled = false;
-            submitBtn.textContent = "Reintentar";
-          }
+          },
+          onFetching: () => {},
         },
-        onFetching: () => {},
-      },
-    });
+      });
+    }
+
+    // ====== Precio real — reemplaza los montos hardcodeados de antes,
+    // respeta el monthly_amount_usd real de cada cliente (ver billing_service.py) ======
+    async function cargarPrecioYArmarFormulario() {
+      if (!clientId) {
+        initCardForm(0);
+        return;
+      }
+      try {
+        const url = new URL(BILLING_SERVICE_URL + "/pricing/" + encodeURIComponent(clientId));
+        if (addon) url.searchParams.set("addon", addon);
+        const resp = await fetch(url);
+        const pricing = await resp.json();
+        if (!resp.ok) throw new Error(pricing.error || "no se pudo obtener el precio");
+
+        tarjetaBtnLabel = `Confirmar suscripción — $${pricing.total_cop.toLocaleString("es-CO")} COP/mes`;
+        cryptoBtnLabel = `Pagar con cripto — $${pricing.total_usd} USD/mes`;
+        submitBtn.textContent = tarjetaBtnLabel;
+        cryptoBtn.textContent = cryptoBtnLabel;
+        initCardForm(pricing.total_cop);
+      } catch (err) {
+        console.error("Error cargando precio:", err);
+        mensaje.textContent = "No se pudo cargar el precio. Recargá la página.";
+        mensaje.className = "error";
+        submitBtn.disabled = true;
+        cryptoBtn.disabled = true;
+      }
+    }
+    cargarPrecioYArmarFormulario();
 
     // ====== Selector de método de pago (Tarjeta / Cripto) ======
     const tabTarjeta = document.getElementById("tabTarjeta");
     const tabCripto = document.getElementById("tabCripto");
     const panelTarjeta = document.getElementById("panelTarjeta");
     const panelCripto = document.getElementById("panelCripto");
-    const cryptoBtn = document.getElementById("cryptoBtn");
 
     tabTarjeta.addEventListener("click", () => {
       tabTarjeta.classList.add("active");
@@ -470,6 +514,7 @@
           body: JSON.stringify({
             client_id: clientId,
             payer_email: payerEmail,
+            addon: addon || undefined,
           }),
         });
 
@@ -483,13 +528,13 @@
           mensaje.textContent = "No se pudo generar el pago: " + (result.error || "error desconocido");
           mensaje.className = "error";
           cryptoBtn.disabled = false;
-          cryptoBtn.textContent = "Pagar con cripto — $50 USD/mes";
+          cryptoBtn.textContent = cryptoBtnLabel;
         }
       } catch (err) {
         mensaje.textContent = "Error al generar el link de pago. Intenta de nuevo.";
         mensaje.className = "error";
         cryptoBtn.disabled = false;
-        cryptoBtn.textContent = "Pagar con cripto — $50 USD/mes";
+        cryptoBtn.textContent = cryptoBtnLabel;
       }
     });
   </script>
