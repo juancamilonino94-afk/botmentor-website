@@ -1,0 +1,497 @@
+<!--
+  Página de suscripción BotMentor — se accede como:
+  https://www.botmentorai.com/suscripcion?cliente=<client_id>
+  (botmentorai.com sin www redirige acá — confirmado con un 308)
+
+  Copiada de botmentor-billing/suscripcion.html (esa es la fuente de verdad
+  del formulario/lógica de pago — cualquier cambio ahí debe replicarse acá).
+  Public Key de MercadoPago y URL de billing ya están completadas abajo.
+  Sin logo en PNG en este sitio (usa el SVG inline) — el <img> cae al
+  wordmark de texto por diseño, ver el onerror más abajo.
+-->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Suscripción BotMentor</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://sdk.mercadopago.com/js/v2"></script>
+  <style>
+    :root {
+      --violeta-nocturno: #1E0E3F;
+      --naranja-fuego: #FF6B35;
+      --violeta-medio: #7C3AED;
+      --lavanda-suave: #F5F3FF;
+      --violeta-claro: #A78BFA;
+      --blanco: #FFFFFF;
+      --error: #DC2626;
+      --exito: #16A34A;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: 'Inter', system-ui, sans-serif;
+      color: var(--violeta-nocturno);
+      background: radial-gradient(circle at 50% 0%, var(--violeta-medio) 0%, var(--violeta-nocturno) 55%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 48px 20px 32px;
+    }
+
+    .brand-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 32px;
+      /* zona de exclusión del logo, según manual de marca */
+      padding: 0 20px;
+    }
+
+    .brand-header img {
+      height: 34px;
+      display: block;
+    }
+
+    /* Fallback si LOGO_URL_AQUI todavía no fue reemplazado: se oculta la
+       imagen rota y se muestra el wordmark de texto en su lugar. */
+    .wordmark {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 24px;
+      color: var(--blanco);
+    }
+    .wordmark span { color: var(--naranja-fuego); }
+
+    .tagline {
+      font-size: 13px;
+      color: var(--violeta-claro);
+      letter-spacing: 0.02em;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 440px;
+      background: var(--lavanda-suave);
+      border-radius: 20px;
+      padding: 36px 32px 32px;
+      box-shadow: 0 24px 60px -20px rgba(14, 5, 36, 0.55);
+    }
+
+    .card-header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 24px;
+      line-height: 1.2;
+      margin: 0 0 14px;
+      color: var(--violeta-nocturno);
+    }
+
+    .client-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--blanco);
+      border: 1px solid var(--violeta-claro);
+      color: var(--violeta-medio);
+      font-size: 13px;
+      font-weight: 500;
+      padding: 6px 14px;
+      border-radius: 999px;
+    }
+
+    .client-badge .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--naranja-fuego);
+    }
+
+    .field {
+      margin-bottom: 16px;
+    }
+
+    .field label {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--violeta-medio);
+      margin-bottom: 6px;
+    }
+
+    #cardForm input[type="text"] {
+      display: block;
+      width: 100%;
+      padding: 12px 14px;
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      color: var(--violeta-nocturno);
+      background: var(--blanco);
+      border: 1px solid #DCD6F5;
+      border-radius: 10px;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    #cardForm input[type="text"]:focus {
+      outline: none;
+      border-color: var(--naranja-fuego);
+      box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.15);
+    }
+
+    /* Los iframes seguros de MercadoPago se montan dentro de estos divs —
+       mismo tratamiento visual que los inputs normales, para que se vean
+       parte del mismo formulario. */
+    .container {
+      height: 44px;
+      padding: 10px 14px;
+      background: var(--blanco);
+      border: 1px solid #DCD6F5;
+      border-radius: 10px;
+      box-sizing: border-box;
+    }
+
+    .row-split {
+      display: flex;
+      gap: 12px;
+    }
+    .row-split .field { flex: 1; }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      margin-top: 8px;
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--blanco);
+      background: var(--naranja-fuego);
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+
+    button:hover:not(:disabled) {
+      background: var(--violeta-medio);
+    }
+
+    button:disabled {
+      background: #C4BEDD;
+      cursor: default;
+    }
+
+    #mensaje {
+      margin-top: 16px;
+      font-size: 14px;
+      font-weight: 500;
+      text-align: center;
+    }
+    .error { color: var(--error); }
+    .exito { color: var(--exito); }
+
+    .footnote {
+      max-width: 440px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--violeta-claro);
+      margin-top: 24px;
+      line-height: 1.5;
+    }
+
+    .method-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+      background: var(--blanco);
+      border: 1px solid #DCD6F5;
+      border-radius: 10px;
+      padding: 4px;
+    }
+
+    .method-tab {
+      flex: 1;
+      padding: 10px;
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--violeta-medio);
+      background: transparent;
+      border: none;
+      border-radius: 7px;
+      cursor: pointer;
+      margin: 0;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+
+    .method-tab.active {
+      background: var(--violeta-nocturno);
+      color: var(--blanco);
+    }
+
+    .method-tab:hover:not(.active):not(:disabled) {
+      background: var(--lavanda-suave);
+    }
+
+    .crypto-info {
+      font-size: 13px;
+      color: #4B4470;
+      line-height: 1.5;
+      margin: 0 0 16px;
+    }
+  </style>
+</head>
+<body>
+  <div class="brand-header">
+    <img src="logo-botmentor.png" alt="BotMentor" onerror="this.style.display='none';" />
+    <div class="wordmark"><strong>Bot</strong><span>Mentor</span></div>
+    <div class="tagline">Tu asistente, tu voz, 24/7</div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h1>Activa tu suscripción</h1>
+      <div class="client-badge" id="clienteInfo"><span class="dot"></span>Cargando...</div>
+    </div>
+
+    <div class="method-tabs">
+      <button type="button" class="method-tab active" id="tabTarjeta">💳 Tarjeta</button>
+      <button type="button" class="method-tab" id="tabCripto">🪙 Cripto</button>
+    </div>
+
+    <div id="panelTarjeta">
+      <form id="cardForm">
+        <div class="field">
+          <label for="cardholderEmail">Correo electrónico</label>
+          <input type="text" id="cardholderEmail" placeholder="tucorreo@ejemplo.com" required />
+        </div>
+
+        <div class="field">
+          <label for="form-checkout__cardNumber">Número de tarjeta</label>
+          <div id="form-checkout__cardNumber" class="container"></div>
+        </div>
+
+        <div class="field">
+          <label for="cardholderName">Nombre en la tarjeta</label>
+          <input type="text" id="cardholderName" placeholder="Nombre y apellido" required />
+        </div>
+
+        <div class="row-split">
+          <div class="field">
+            <label for="form-checkout__expirationDate">Vencimiento</label>
+            <div id="form-checkout__expirationDate" class="container"></div>
+          </div>
+          <div class="field">
+            <label for="form-checkout__securityCode">CVV</label>
+            <div id="form-checkout__securityCode" class="container"></div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="identificationNumber">Número de documento</label>
+          <input type="text" id="identificationNumber" placeholder="Documento del titular" required />
+        </div>
+
+        <select id="form-checkout__installments" style="display:none;"></select>
+        <select id="form-checkout__issuer" style="display:none;"></select>
+
+        <button type="submit" id="submitBtn">Confirmar suscripción — $200.000 COP/mes</button>
+      </form>
+    </div>
+
+    <div id="panelCripto" style="display:none;">
+      <div class="field">
+        <label for="cryptoEmail">Correo electrónico</label>
+        <input type="text" id="cryptoEmail" placeholder="tucorreo@ejemplo.com" required />
+      </div>
+      <p class="crypto-info">
+        Te llevaremos a una página segura donde eliges tu criptomoneda
+        (USDT, BTC, ETH y más) y completas el pago. Cuando se confirme,
+        tu suscripción se activa automáticamente.
+      </p>
+      <button type="button" id="cryptoBtn">Pagar con cripto — $50 USD/mes</button>
+    </div>
+
+    <p id="mensaje"></p>
+  </div>
+
+  <p class="footnote">
+    Pago procesado de forma segura por MercadoPago. Los datos de tu tarjeta
+    se envían directamente y nunca pasan por los servidores de BotMentor.
+  </p>
+
+  <script>
+    // ====== CONFIGURACIÓN — ajustar antes de publicar ======
+    const MERCADOPAGO_PUBLIC_KEY = "APP_USR-d42756f8-f44b-4266-a3c4-5b4bcf03348b";
+    const BILLING_SERVICE_URL = "https://web-production-79cdc.up.railway.app";
+    // =========================================================
+
+    const params = new URLSearchParams(window.location.search);
+    const clientId = params.get("cliente");
+
+    const clienteInfo = document.getElementById("clienteInfo");
+    const mensaje = document.getElementById("mensaje");
+    const submitBtn = document.getElementById("submitBtn");
+
+    if (!clientId) {
+      clienteInfo.textContent = "Falta el parámetro ?cliente= en la URL.";
+      submitBtn.disabled = true;
+    } else {
+      clienteInfo.innerHTML = '<span class="dot"></span>Suscripción para: ' + clientId;
+    }
+
+    const mp = new MercadoPago(MERCADOPAGO_PUBLIC_KEY, { locale: "es-CO" });
+
+    const cardForm = mp.cardForm({
+      amount: "200000",
+      iframe: true,
+      form: {
+        id: "cardForm",
+        cardholderName: { id: "cardholderName" },
+        cardholderEmail: { id: "cardholderEmail" },
+        cardNumber: { id: "form-checkout__cardNumber" },
+        expirationDate: { id: "form-checkout__expirationDate" },
+        securityCode: { id: "form-checkout__securityCode" },
+        identificationNumber: { id: "identificationNumber" },
+        installments: { id: "form-checkout__installments" },
+        issuer: { id: "form-checkout__issuer" },
+      },
+      callbacks: {
+        onFormMounted: (error) => {
+          if (error) {
+            console.error("Error al montar el formulario:", error);
+            mensaje.textContent = "No se pudo cargar el formulario de pago.";
+            mensaje.className = "error";
+            return;
+          }
+          console.log("Formulario de tarjeta montado correctamente");
+        },
+        onSubmit: async (event) => {
+          event.preventDefault();
+          submitBtn.disabled = true;
+          submitBtn.textContent = "Procesando...";
+          mensaje.textContent = "";
+          mensaje.className = "";
+
+          try {
+            const cardData = await cardForm.createCardToken();
+            const payerEmail = document.getElementById("cardholderEmail").value;
+
+            const resp = await fetch(BILLING_SERVICE_URL + "/subscribe", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                client_id: clientId,
+                payer_email: payerEmail,
+                card_token_id: cardData.token,
+              }),
+            });
+
+            const result = await resp.json();
+
+            if (resp.ok && result.ok) {
+              mensaje.textContent = "¡Listo! Tu suscripción quedó activa.";
+              mensaje.className = "exito";
+              submitBtn.style.display = "none";
+            } else {
+              mensaje.textContent = "No se pudo completar: " + (result.error || "error desconocido");
+              mensaje.className = "error";
+              submitBtn.disabled = false;
+              submitBtn.textContent = "Reintentar";
+            }
+          } catch (err) {
+            mensaje.textContent = "Error al procesar la tarjeta. Verifica los datos.";
+            mensaje.className = "error";
+            submitBtn.disabled = false;
+            submitBtn.textContent = "Reintentar";
+          }
+        },
+        onFetching: () => {},
+      },
+    });
+
+    // ====== Selector de método de pago (Tarjeta / Cripto) ======
+    const tabTarjeta = document.getElementById("tabTarjeta");
+    const tabCripto = document.getElementById("tabCripto");
+    const panelTarjeta = document.getElementById("panelTarjeta");
+    const panelCripto = document.getElementById("panelCripto");
+    const cryptoBtn = document.getElementById("cryptoBtn");
+
+    tabTarjeta.addEventListener("click", () => {
+      tabTarjeta.classList.add("active");
+      tabCripto.classList.remove("active");
+      panelTarjeta.style.display = "block";
+      panelCripto.style.display = "none";
+      mensaje.textContent = "";
+      mensaje.className = "";
+    });
+
+    tabCripto.addEventListener("click", () => {
+      tabCripto.classList.add("active");
+      tabTarjeta.classList.remove("active");
+      panelCripto.style.display = "block";
+      panelTarjeta.style.display = "none";
+      mensaje.textContent = "";
+      mensaje.className = "";
+    });
+
+    // ====== Pago con cripto (NOWPayments) ======
+    cryptoBtn.addEventListener("click", async () => {
+      const payerEmail = document.getElementById("cryptoEmail").value;
+
+      if (!payerEmail) {
+        mensaje.textContent = "Ingresa tu correo electrónico para continuar.";
+        mensaje.className = "error";
+        return;
+      }
+
+      cryptoBtn.disabled = true;
+      cryptoBtn.textContent = "Generando link de pago...";
+      mensaje.textContent = "";
+      mensaje.className = "";
+
+      try {
+        const resp = await fetch(BILLING_SERVICE_URL + "/subscribe-crypto", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            client_id: clientId,
+            payer_email: payerEmail,
+          }),
+        });
+
+        const result = await resp.json();
+
+        if (resp.ok && result.ok && result.invoice_url) {
+          mensaje.textContent = "Redirigiendo a la página de pago...";
+          mensaje.className = "exito";
+          window.location.href = result.invoice_url;
+        } else {
+          mensaje.textContent = "No se pudo generar el pago: " + (result.error || "error desconocido");
+          mensaje.className = "error";
+          cryptoBtn.disabled = false;
+          cryptoBtn.textContent = "Pagar con cripto — $50 USD/mes";
+        }
+      } catch (err) {
+        mensaje.textContent = "Error al generar el link de pago. Intenta de nuevo.";
+        mensaje.className = "error";
+        cryptoBtn.disabled = false;
+        cryptoBtn.textContent = "Pagar con cripto — $50 USD/mes";
+      }
+    });
+  </script>
+</body>
+</html>
