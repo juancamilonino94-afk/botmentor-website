@@ -71,18 +71,43 @@
   }
   .mentor-access svg{width:12px;height:12px;opacity:.7;}
   @media (max-width:760px){.nav-links{display:none;}.mentor-access span{display:none;}}
+  @media (max-width:400px){.nav-cta .mentor-access{display:none;}}
+
+  /* ---------- GRAIN (textura sutil sobre fondos oscuros, para que no se sientan planos) ---------- */
+  .grain{
+    position:absolute;inset:0;opacity:.05;mix-blend-mode:overlay;pointer-events:none;z-index:0;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size:180px 180px;
+  }
+
+  /* ---------- MESH BACKGROUNDS (varios blobs con deriva lenta — más profundidad
+     que un simple degradado de esquina, en ambas variantes oscura/clara) ---------- */
+  .mesh{position:absolute;inset:-16%;z-index:0;pointer-events:none;filter:blur(6px);animation:meshDrift 28s ease-in-out infinite;}
+  @keyframes meshDrift{
+    0%{transform:translate(0,0) scale(1);}
+    50%{transform:translate(-3%,2.5%) scale(1.07);}
+    100%{transform:translate(2.5%,-2%) scale(1);}
+  }
+  .mesh-dark{
+    background:
+      radial-gradient(34% 38% at 16% 20%, rgba(255,107,53,.26), transparent 62%),
+      radial-gradient(40% 44% at 84% 10%, rgba(124,58,237,.36), transparent 62%),
+      radial-gradient(46% 46% at 66% 90%, rgba(167,139,250,.18), transparent 62%),
+      radial-gradient(32% 32% at 6% 92%, rgba(255,107,53,.15), transparent 62%);
+  }
+  .mesh-light{
+    filter:none;
+    background:
+      radial-gradient(30% 32% at 88% 8%, rgba(124,58,237,.14) 0%, rgba(124,58,237,.05) 55%, transparent 100%),
+      radial-gradient(28% 30% at 6% 28%, rgba(255,107,53,.1) 0%, rgba(255,107,53,.03) 55%, transparent 100%),
+      radial-gradient(34% 34% at 55% 98%, rgba(167,139,250,.13) 0%, rgba(167,139,250,.04) 55%, transparent 100%);
+  }
 
   /* ---------- HERO ---------- */
-  .hero{
-    padding:72px 0 90px;position:relative;
-    background:radial-gradient(70% 60% at 82% 8%, rgba(124,58,237,.28), transparent 60%),
-               radial-gradient(50% 45% at 6% 100%, rgba(255,107,53,.1), transparent 60%),
-               var(--violeta-noche);
-    overflow:hidden;
-  }
-  .hero-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:48px;align-items:center;}
-  .hero h1{font-size:clamp(34px,4.4vw,54px);line-height:1.06;margin:18px 0 20px;}
-  .hero h1 em{font-style:normal;color:var(--naranja);}
+  .hero{padding:88px 0 104px;position:relative;background:var(--violeta-noche);overflow:hidden;}
+  .hero-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:48px;align-items:center;position:relative;z-index:1;}
+  .hero h1{font-size:clamp(38px,5.4vw,64px);line-height:1.03;margin:20px 0 22px;}
+  .hero h1 em{font-style:normal;background:linear-gradient(100deg,var(--naranja) 30%,#FFA36B 60%,var(--naranja) 90%);-webkit-background-clip:text;background-clip:text;color:transparent;}
   .hero p.lead{font-size:18.5px;line-height:1.62;color:var(--texto-suave);max-width:480px;margin-bottom:30px;}
   .hero-ctas{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:34px;}
   .hero-proof{display:flex;gap:22px;flex-wrap:wrap;font-size:14.5px;color:rgba(255,255,255,.6);}
@@ -153,10 +178,6 @@
   section{padding:88px 0;}
   section[id]{scroll-margin-top:76px;}
   .section-light{background:var(--lavanda);color:var(--texto-oscuro);position:relative;overflow:hidden;}
-  .section-light::before{
-    content:"";position:absolute;top:-140px;right:-110px;width:440px;height:440px;border-radius:50%;
-    background:radial-gradient(circle,rgba(124,58,237,.09),transparent 70%);pointer-events:none;z-index:0;
-  }
   .section-light .wrap{position:relative;z-index:1;}
   .section-head{max-width:600px;margin-bottom:48px;}
   .section-head h2{font-size:clamp(27px,3.2vw,39px);line-height:1.16;margin-top:14px;}
@@ -185,18 +206,27 @@
   @media (max-width:560px){.problem-grid{grid-template-columns:1fr;}}
 
   /* ---------- HOW IT WORKS ---------- */
-  .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:26px;}
+  .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:26px;position:relative;}
+  @media (min-width:861px){
+    .steps{grid-template-columns:repeat(5,1fr);}
+    .steps::before{
+      content:"";position:absolute;top:18px;left:calc(10% + 18px);right:calc(10% + 18px);height:2px;
+      background:linear-gradient(90deg, var(--naranja), var(--violeta-medio) 50%, var(--naranja));
+      opacity:.4;z-index:0;
+    }
+  }
+  .step{position:relative;z-index:1;}
   .step-num{
     width:36px;height:36px;border-radius:50%;background:var(--naranja);
     color:#fff;font-family:'Space Grotesk';font-weight:700;font-size:14.5px;
     display:flex;align-items:center;justify-content:center;margin-bottom:16px;
-    box-shadow:0 6px 14px rgba(255,107,53,.35);
+    box-shadow:0 0 0 6px var(--violeta-noche),0 6px 14px rgba(255,107,53,.35);
   }
   .step h3{font-size:16.5px;font-weight:600;font-family:'Inter';margin-bottom:7px;}
   .step p{font-size:14.5px;line-height:1.55;color:var(--texto-suave);}
 
   /* ---------- FEATURES ---------- */
-  .features-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;}
+  .features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
   .feature{
     background:var(--blanco);border-radius:var(--bubble);padding:26px 24px;
     border:1px solid rgba(36,22,64,.06);box-shadow:0 10px 26px rgba(36,22,64,.06);
@@ -206,14 +236,51 @@
   .feature:hover{transform:translateY(-4px);box-shadow:0 18px 38px rgba(36,22,64,.14);border-color:rgba(124,58,237,.2);}
   .feature-icon{width:44px;height:44px;border-radius:12px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
   .feature-icon svg{width:22px;height:22px;}
-  .feature:nth-child(odd) .feature-icon{background:rgba(255,107,53,.14);color:var(--naranja);}
-  .feature:nth-child(even) .feature-icon{background:rgba(124,58,237,.14);color:var(--violeta-medio);}
+  .feature:nth-child(3n+1) .feature-icon{background:rgba(255,107,53,.14);color:var(--naranja);}
+  .feature:nth-child(3n+2) .feature-icon{background:rgba(124,58,237,.14);color:var(--violeta-medio);}
+  .feature:nth-child(3n) .feature-icon{background:rgba(167,139,250,.22);color:var(--violeta-medio);}
   .feature-text h3{font-size:16.5px;font-weight:600;font-family:'Inter';letter-spacing:0;margin-bottom:5px;}
   .feature-text p{font-size:14.5px;line-height:1.5;color:var(--texto-suave-oscuro);}
-  @media (max-width:700px){.features-grid{grid-template-columns:1fr;}}
+  @media (max-width:860px){.features-grid{grid-template-columns:repeat(2,1fr);}}
+  @media (max-width:560px){.features-grid{grid-template-columns:1fr;}}
+
+  /* ---- spotlight: Dashboard + Métricas, tratamiento distinto para que resalten ---- */
+  .spotlight-card{
+    margin-top:18px;background:var(--violeta-noche);border-radius:var(--bubble);
+    padding:38px 40px;position:relative;overflow:hidden;
+    display:grid;grid-template-columns:1fr 1fr;gap:36px;
+  }
+  .spotlight-card::before{
+    content:"";position:absolute;top:-140px;right:-100px;width:360px;height:360px;border-radius:50%;
+    background:radial-gradient(circle,rgba(124,58,237,.3),transparent 65%);pointer-events:none;
+  }
+  .spotlight-item{position:relative;z-index:1;}
+  .spotlight-item h3{color:var(--blanco);font-size:18px;font-weight:600;font-family:'Inter';margin-bottom:8px;}
+  .spotlight-item p{color:var(--texto-suave);font-size:14px;line-height:1.55;margin-bottom:18px;max-width:320px;}
+  .spotlight-item + .spotlight-item{border-left:1px solid rgba(255,255,255,.08);padding-left:36px;}
+  @media (max-width:760px){
+    .spotlight-card{grid-template-columns:1fr;padding:30px 26px;}
+    .spotlight-item + .spotlight-item{border-left:none;padding-left:0;padding-top:26px;border-top:1px solid rgba(255,255,255,.08);}
+  }
+
+  /* mini-funnel decorativo (sin cifras — solo forma, para Dashboard centralizado) */
+  .mini-funnel{display:flex;flex-direction:column;gap:7px;}
+  .mini-funnel-row{display:flex;align-items:center;gap:10px;}
+  .mini-funnel-bar{height:9px;border-radius:5px;background:linear-gradient(90deg,var(--naranja),var(--violeta-medio));}
+  .mini-funnel-label{font-size:11px;color:rgba(255,255,255,.45);white-space:nowrap;width:78px;flex-shrink:0;}
+
+  /* mini-gráfico de línea decorativo (sin cifras — solo tendencia, para Análisis de métricas) */
+  .mini-chart{width:100%;height:64px;}
+  .mini-chart path{fill:none;stroke:var(--naranja);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;}
+  .mini-chart .fill{fill:url(#miniChartFill);stroke:none;}
 
   /* ---------- WHY ---------- */
-  .why{background:linear-gradient(135deg,var(--violeta-medio),var(--violeta-noche-2));border-radius:var(--bubble);padding:52px 46px;display:grid;grid-template-columns:1fr 1fr;gap:44px;align-items:center;}
+  .why{
+    background:linear-gradient(135deg,var(--violeta-medio),var(--violeta-noche-2));border-radius:var(--bubble);
+    padding:52px 46px;display:grid;grid-template-columns:1fr 1fr;gap:44px;align-items:center;
+    position:relative;overflow:hidden;
+  }
+  .why > *:not(.mesh){position:relative;z-index:1;}
   .why h2{font-size:clamp(25px,2.8vw,33px);line-height:1.18;}
   .why-list{display:flex;flex-direction:column;gap:20px;}
   .why-item{display:flex;gap:14px;}
@@ -238,14 +305,6 @@
 
   /* ---------- CONTACT CENTER ---------- */
   .cc{background:var(--violeta-noche);position:relative;overflow:hidden;}
-  .cc::before{
-    content:"";position:absolute;top:-170px;left:-130px;width:480px;height:480px;border-radius:50%;
-    background:radial-gradient(circle,rgba(255,107,53,.14),transparent 65%);pointer-events:none;
-  }
-  .cc::after{
-    content:"";position:absolute;bottom:-220px;right:-150px;width:540px;height:540px;border-radius:50%;
-    background:radial-gradient(circle,rgba(124,58,237,.24),transparent 65%);pointer-events:none;
-  }
   .cc-grid{display:grid;grid-template-columns:.95fr 1.05fr;gap:56px;align-items:center;position:relative;z-index:1;}
   .cc-copy p.lead{color:var(--texto-suave);font-size:17px;line-height:1.62;max-width:460px;margin:16px 0 26px;}
   .cc-list{display:flex;flex-direction:column;gap:16px;margin-bottom:30px;}
@@ -255,7 +314,8 @@
   .cc-list-item h4{font-size:15.5px;font-weight:600;color:var(--blanco);margin-bottom:2px;font-family:'Inter';}
   .cc-list-item p{font-size:13.5px;color:var(--texto-suave);line-height:1.5;}
 
-  .cc-window-wrap{position:relative;}
+  .cc-window-wrap{position:relative;animation:ccFloat 6s ease-in-out infinite;}
+  @keyframes ccFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);}}
   .cc-window{
     background:#0F0824;border-radius:20px;border:1px solid rgba(255,255,255,.08);
     box-shadow:0 40px 90px rgba(0,0,0,.5);overflow:hidden;
@@ -287,6 +347,15 @@
     text-transform:uppercase;letter-spacing:.05em;
   }
   @media (max-width:900px){.cc-grid{grid-template-columns:1fr;}.cc-window-wrap{margin-top:8px;}}
+
+  /* ---------- STATEMENT ---------- */
+  .statement{padding:80px 0;background:var(--violeta-noche-2);text-align:center;position:relative;overflow:hidden;}
+  .statement .wrap{position:relative;z-index:1;}
+  .statement-text{
+    font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:clamp(24px,3.6vw,40px);
+    line-height:1.32;color:rgba(255,255,255,.42);max-width:800px;margin:0 auto;
+  }
+  .statement-text span{color:var(--blanco);}
 
   /* ---------- FINAL CTA ---------- */
   .final-cta{text-align:center;padding:104px 0 90px;}
@@ -368,6 +437,8 @@
 
   <!-- HERO -->
   <section class="hero">
+    <div class="mesh mesh-dark"></div>
+    <div class="grain"></div>
     <div class="wrap hero-grid">
       <div>
         <span class="eyebrow">Bots con IA para tu comunidad</span>
@@ -427,6 +498,8 @@
 
   <!-- PROBLEM -->
   <section id="problema" class="section-light">
+    <div class="mesh mesh-light"></div>
+    <div class="grain"></div>
     <div class="wrap">
       <div class="section-head reveal">
         <span class="eyebrow">El problema</span>
@@ -507,6 +580,8 @@
 
   <!-- FEATURES -->
   <section id="incluye" class="section-light">
+    <div class="mesh mesh-light"></div>
+    <div class="grain"></div>
     <div class="wrap">
       <div class="section-head reveal">
         <span class="eyebrow">Qué incluye</span>
@@ -537,13 +612,34 @@
           <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 3v18h18M8 17V10m5 7V6m5 11v-4" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
           <div class="feature-text"><h3>Reporte diario</h3><p>Un resumen de tu día te llega solo, a la hora que elijas — sin que tengas que perseguirlo ni pedirlo.</p></div>
         </div>
-        <div class="feature">
-          <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="3" width="7" height="9" rx="1.6" stroke="currentColor" stroke-width="2.1"/><rect x="14" y="3" width="7" height="5" rx="1.6" stroke="currentColor" stroke-width="2.1"/><rect x="14" y="12" width="7" height="9" rx="1.6" stroke="currentColor" stroke-width="2.1"/><rect x="3" y="16" width="7" height="5" rx="1.6" stroke="currentColor" stroke-width="2.1"/></svg></div>
-          <div class="feature-text"><h3>Dashboard centralizado</h3><p>Todos tus prospectos en un solo lugar, con el embudo completo de conversión y el estado real de cada uno — sin perseguir información dispersa en tus chats.</p></div>
+      </div>
+
+      <div class="spotlight-card reveal reveal-3">
+        <div class="spotlight-item">
+          <span class="eyebrow" style="color:var(--violeta-claro)">Nuevo</span>
+          <h3 style="margin-top:10px;">Dashboard centralizado</h3>
+          <p>Todos tus prospectos en un solo lugar, con el embudo completo de conversión y el estado real de cada uno — sin perseguir información dispersa en tus chats.</p>
+          <div class="mini-funnel">
+            <div class="mini-funnel-row"><span class="mini-funnel-label">Nuevo</span><div class="mini-funnel-bar" style="width:100%;"></div></div>
+            <div class="mini-funnel-row"><span class="mini-funnel-label">Interesado</span><div class="mini-funnel-bar" style="width:70%;"></div></div>
+            <div class="mini-funnel-row"><span class="mini-funnel-label">Validado</span><div class="mini-funnel-bar" style="width:46%;"></div></div>
+            <div class="mini-funnel-row"><span class="mini-funnel-label">Cliente</span><div class="mini-funnel-bar" style="width:24%;"></div></div>
+          </div>
         </div>
-        <div class="feature">
-          <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 3v18h18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M7 15l3.5-4 3 2.5L18 8" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="18" cy="8" r="1.8" fill="currentColor"/></svg></div>
-          <div class="feature-text"><h3>Análisis de métricas</h3><p>Sabes cuántos prospectos entran, en qué etapa se quedan y qué está funcionando de verdad — decisiones con datos, no con intuición.</p></div>
+        <div class="spotlight-item">
+          <span class="eyebrow" style="color:var(--violeta-claro)">Nuevo</span>
+          <h3 style="margin-top:10px;">Análisis de métricas</h3>
+          <p>Sabes cuántos prospectos entran, en qué etapa se quedan y qué está funcionando de verdad — decisiones con datos, no con intuición.</p>
+          <svg class="mini-chart" viewBox="0 0 220 64" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="miniChartFill" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#FF6B35" stop-opacity=".35"/>
+                <stop offset="100%" stop-color="#FF6B35" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <path class="fill" d="M0,50 C30,52 45,30 70,32 C95,34 100,44 130,36 C160,28 170,10 220,8 L220,64 L0,64 Z"/>
+            <path d="M0,50 C30,52 45,30 70,32 C95,34 100,44 130,36 C160,28 170,10 220,8"/>
+          </svg>
         </div>
       </div>
     </div>
@@ -551,6 +647,8 @@
 
   <!-- CONTACT CENTER -->
   <section id="contact-center" class="cc">
+    <div class="mesh mesh-dark"></div>
+    <div class="grain"></div>
     <div class="wrap cc-grid">
       <div class="cc-copy reveal">
         <span class="eyebrow" style="color:var(--violeta-claro)">Contact Center</span>
@@ -596,10 +694,20 @@
     </div>
   </section>
 
+  <!-- STATEMENT -->
+  <section class="statement">
+    <div class="mesh mesh-dark"></div>
+    <div class="grain"></div>
+    <div class="wrap">
+      <p class="statement-text reveal">Menos tiempo respondiendo lo mismo. <span>Más tiempo haciendo crecer tu comunidad.</span></p>
+    </div>
+  </section>
+
   <!-- WHY -->
   <section>
     <div class="wrap">
       <div class="why reveal">
+        <div class="mesh mesh-dark"></div>
         <div>
           <span class="eyebrow" style="color:var(--violeta-claro)">Por qué BotMentor</span>
           <h2 style="margin-top:14px;">Un bot probado en un canal real, no un experimento</h2>
@@ -628,6 +736,8 @@
 
   <!-- PRICING -->
   <section id="precio" class="section-light">
+    <div class="mesh mesh-light"></div>
+    <div class="grain"></div>
     <div class="wrap">
       <div class="section-head reveal">
         <span class="eyebrow">Precio, sin sorpresas</span>
@@ -684,7 +794,6 @@
   </div>
 </footer>
 
-<script>
   // Revela secciones al hacer scroll — respeta prefers-reduced-motion mostrando
   // todo directo, sin animar, en vez de dejar contenido invisible para quien
   // desactivó el movimiento.
