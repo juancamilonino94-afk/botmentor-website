@@ -56,7 +56,7 @@
 
   /* ---------- NAV ---------- */
   header{
-    position:sticky;top:0;z-index:50;
+    position:fixed;top:0;left:0;right:0;z-index:50;
     background:rgba(30,14,63,var(--nav-fade,0));
     border-bottom:1px solid rgba(255,255,255,calc(var(--nav-fade,0) * .08));
     backdrop-filter:blur(calc(var(--nav-fade,0) * 10px));
@@ -112,7 +112,7 @@
   }
 
   /* ---------- HERO ---------- */
-  .hero{padding:88px 0 104px;position:relative;background:var(--violeta-noche);overflow:hidden;}
+  .hero{padding:calc(88px + var(--header-h, 66px)) 0 104px;position:relative;background:var(--violeta-noche);overflow:hidden;}
   .hero-grid{display:grid;grid-template-columns:.92fr 1.18fr;gap:32px;align-items:center;position:relative;z-index:1;}
   .hero h1{font-size:clamp(38px,5.4vw,64px);line-height:1.03;margin:20px 0 22px;}
   .hero h1 em{font-style:normal;background:linear-gradient(100deg,var(--naranja) 30%,#FFA36B 60%,var(--naranja) 90%);-webkit-background-clip:text;background-clip:text;color:transparent;}
@@ -184,7 +184,7 @@
 
   /* ---------- SECTION SHELL ---------- */
   section{padding:88px 0;}
-  section[id]{scroll-margin-top:76px;}
+  section[id]{scroll-margin-top:calc(var(--header-h, 66px) + 12px);}
   .section-light{background:var(--lavanda);color:var(--texto-oscuro);position:relative;overflow:hidden;}
   .section-light .wrap{position:relative;z-index:1;}
   .section-head{max-width:600px;margin-bottom:48px;}
@@ -226,12 +226,15 @@
   .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:26px;position:relative;}
   @media (min-width:861px){
     .steps{grid-template-columns:repeat(5,1fr);}
-    .steps::before{
-      content:"";position:absolute;top:18px;left:18px;right:18px;height:2px;
-      background:linear-gradient(90deg, var(--naranja), var(--violeta-medio));
-      opacity:.4;z-index:0;
-    }
   }
+  /* La línea se posiciona con JS (steps-line), midiendo el centro real del
+     primer y último círculo — dentro de una grilla de 1fr el círculo queda
+     pegado a la izquierda de su columna, así que el último NO queda pegado
+     al borde derecho del contenedor (hay espacio vacío del resto de esa
+     columna). Calcular eso a mano en % da resultados incorrectos: mejor
+     medir el DOM real. */
+  .steps-line{position:absolute;top:18px;height:2px;background:linear-gradient(90deg, var(--naranja), var(--violeta-medio));opacity:.4;z-index:0;display:none;}
+  @media (min-width:861px){.steps-line{display:block;}}
   .step{position:relative;z-index:1;}
   .step-num{
     width:36px;height:36px;border-radius:50%;background:var(--naranja);
@@ -372,11 +375,11 @@
   @media (max-width:900px){.cc-grid{grid-template-columns:1fr;}.cc-window-wrap{margin-top:8px;}}
 
   /* ---------- STATEMENT ---------- */
-  .statement{padding:86px 0;background:var(--violeta-medio);text-align:center;position:relative;overflow:hidden;}
+  .statement{padding:86px 0;background:var(--blanco);text-align:center;position:relative;overflow:hidden;}
   .statement .wrap{position:relative;z-index:1;}
   .statement-text{
     font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:clamp(26px,3.6vw,42px);
-    line-height:1.3;color:var(--blanco);max-width:720px;margin:0 auto;
+    line-height:1.3;color:var(--texto-oscuro);max-width:720px;margin:0 auto;
   }
   .statement-text span{color:var(--naranja);}
 
@@ -400,7 +403,7 @@
   }
   @media (max-width:520px){
     section{padding:64px 0;}
-    .hero{padding:52px 0 60px;}
+    .hero{padding:calc(52px + var(--header-h, 60px)) 0 60px;}
     .phone{max-width:230px;}
     .phone-screen{min-height:340px;}
     .stats-col{flex-direction:row;flex-wrap:wrap;justify-content:center;flex:1 1 100%;}
@@ -572,6 +575,7 @@
         <p class="section-sub" style="color:var(--texto-suave);">En 5 pasos, sin que tengas que saber nada de tecnología.</p>
       </div>
       <div class="steps reveal reveal-2">
+        <div class="steps-line" id="steps-line"></div>
         <div class="step">
           <div class="step-num">1</div>
           <h3>Completas un formulario</h3>
@@ -720,7 +724,7 @@
   <!-- STATEMENT -->
   <section class="statement">
     <div class="wrap">
-      <p class="statement-text reveal">Cada mensaje respondido a tiempo es un prospecto que <span>no se enfría.</span></p>
+      <p class="statement-text reveal">Sentirse escuchado al instante genera confianza. Y la confianza es lo que <span>convierte.</span></p>
     </div>
   </section>
 
@@ -812,11 +816,43 @@
 </footer>
 
 <script>
+  // El header es fixed (flota sobre el hero de verdad, no solo transparente
+  // en el flujo normal) — así el degradado del hero se ve "a través" de él
+  // desde el primer pixel. El hero compensa con padding-top igual a la
+  // altura real del header (medida, no adivinada) para que su contenido no
+  // quede tapado.
+  var headerEl = document.querySelector('header');
+  function updateHeaderHeight() {
+    document.documentElement.style.setProperty('--header-h', headerEl.offsetHeight + 'px');
+  }
+  updateHeaderHeight();
+  window.addEventListener('resize', updateHeaderHeight);
+
+  // Línea del timeline de "Cómo funciona": se mide el centro real del primer
+  // y del último círculo (getBoundingClientRect), en vez de adivinar el
+  // offset por CSS — así queda exacta sin importar cómo reparta el ancho la
+  // grilla.
+  function positionStepsLine() {
+    var line = document.getElementById('steps-line');
+    var stepsEl = document.querySelector('.steps');
+    if (!line || !stepsEl) return;
+    var circles = stepsEl.querySelectorAll('.step-num');
+    if (circles.length < 2) return;
+    var containerRect = stepsEl.getBoundingClientRect();
+    var firstRect = circles[0].getBoundingClientRect();
+    var lastRect = circles[circles.length - 1].getBoundingClientRect();
+    var left = (firstRect.left + firstRect.width / 2) - containerRect.left;
+    var right = (lastRect.left + lastRect.width / 2) - containerRect.left;
+    line.style.left = left + 'px';
+    line.style.width = Math.max(0, right - left) + 'px';
+  }
+  positionStepsLine();
+  window.addEventListener('resize', positionStepsLine);
+
   // El header arranca transparente sobre el hero (mismo fondo, sin corte de
   // color) y se va volviendo sólido de forma gradual a medida que se
-  // scrollea — un fundido continuo en vez de un salto brusco a los 40px,
-  // para que el blend con el hero se sienta intencional.
-  var headerEl = document.querySelector('header');
+  // scrollea — un fundido continuo en vez de un salto brusco, para que el
+  // blend con el hero se sienta intencional.
   function updateHeaderFade() {
     var fade = Math.min(window.scrollY / 220, 1);
     headerEl.style.setProperty('--nav-fade', fade.toFixed(3));
