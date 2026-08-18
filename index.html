@@ -219,6 +219,21 @@
   .price-note{font-size:14.5px;color:var(--texto-suave-oscuro);line-height:1.55;margin-bottom:22px;flex:1;}
   @media (max-width:700px){.pricing-grid{grid-template-columns:1fr;}}
 
+  .addon-card{
+    margin-top:20px;background:var(--blanco);border:1.5px dashed rgba(124,58,237,.35);border-radius:var(--bubble);
+    padding:22px 26px;display:flex;align-items:flex-start;gap:18px;flex-wrap:wrap;
+  }
+  .addon-tag{
+    flex-shrink:0;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;
+    color:var(--violeta-medio);background:rgba(124,58,237,.1);padding:6px 12px;border-radius:999px;
+  }
+  .addon-body h3{
+    font-family:'Inter';font-weight:600;font-size:16.5px;letter-spacing:0;margin-bottom:6px;
+    display:flex;align-items:center;gap:10px;flex-wrap:wrap;color:var(--texto-oscuro);
+  }
+  .addon-price{font-family:'Space Grotesk';font-weight:700;font-size:14px;color:var(--naranja);}
+  .addon-body p{font-size:14.5px;line-height:1.55;color:var(--texto-suave-oscuro);}
+
   /* ---------- FINAL CTA ---------- */
   .final-cta{text-align:center;padding:104px 0 90px;}
   .final-cta h2{font-size:clamp(29px,4vw,45px);line-height:1.14;max-width:640px;margin:0 auto 28px;}
@@ -300,9 +315,9 @@
   <section class="hero">
     <div class="wrap hero-grid">
       <div>
-        <span class="eyebrow">Bots de Telegram con IA</span>
+        <span class="eyebrow">Bots con IA para tu comunidad</span>
         <h1>Tu asistente. <em>Tu voz.</em><br>Las 24 horas.</h1>
-        <p class="lead">Con BotMentor no vuelves a perder un cliente: tu bot responde al instante, hace seguimiento automático y convierte más prospectos en ventas — sin que tengas que estar pegado al celular.</p>
+        <p class="lead">Con BotMentor no vuelves a perder un cliente: tu bot responde al instante, hace seguimiento automático y convierte más prospectos en ventas — y ves todo desde un dashboard centralizado, sin que tengas que estar pegado al celular.</p>
         <div class="hero-ctas">
           <a href="https://t.me/botmentorsupport" target="_blank" rel="noopener" class="btn btn-primary">Quiero mi bot</a>
           <a href="#como-funciona" class="btn btn-ghost">Ver cómo funciona</a>
@@ -424,7 +439,7 @@
         <div class="step">
           <div class="step-num">4</div>
           <h3>Conectamos tu canal</h3>
-          <p>Se integra a tu Telegram, con accesos y seguimiento automático.</p>
+          <p>Se integra a tu canal, con accesos y seguimiento automático.</p>
         </div>
         <div class="step">
           <div class="step-num">5</div>
@@ -445,27 +460,35 @@
       <div class="features-grid">
         <div class="feature">
           <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21 11.5a8.5 8.5 0 0 1-12.36 7.58L3 20l1.08-5.4A8.5 8.5 0 1 1 21 11.5Z" stroke="currentColor" stroke-width="2.1" stroke-linejoin="round"/></svg></div>
-          <div class="feature-text"><h3>Onboarding calificador</h3><p>Recibe y filtra cada prospecto nuevo desde el primer mensaje.</p></div>
+          <div class="feature-text"><h3>Onboarding calificador</h3><p>Cada prospecto nuevo pasa un filtro automático desde el primer mensaje, para que dediques tu tiempo a quien de verdad está listo para avanzar.</p></div>
         </div>
         <div class="feature">
           <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 22s8-4.5 8-11V5l-8-3-8 3v6c0 6.5 8 11 8 11Z" stroke="currentColor" stroke-width="2.1" stroke-linejoin="round"/></svg></div>
-          <div class="feature-text"><h3>Detección de ubicación</h3><p>Identifica restricciones de acceso según dónde esté el prospecto, y lo guía antes de perderlo.</p></div>
+          <div class="feature-text"><h3>Detección de ubicación</h3><p>Identifica restricciones según el país del prospecto y lo guía a tiempo, antes de que se pierda por una barrera que ni sabía que existía.</p></div>
         </div>
         <div class="feature">
           <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="4" width="18" height="16" rx="3" stroke="currentColor" stroke-width="2.1"/><path d="M8 2v4M16 2v4M3 10h18" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"/></svg></div>
-          <div class="feature-text"><h3>Validación con botones</h3><p>Confirmas el registro de cada cliente con un clic, sin planillas ni copiar y pegar.</p></div>
+          <div class="feature-text"><h3>Validación con botones</h3><p>Confirmas cada registro con un clic desde tu celular — sin planillas, sin copiar y pegar, sin que se te pase ninguno.</p></div>
         </div>
         <div class="feature">
           <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 12a9 9 0 1 0 9-9M3 12l4-2m-4 2 3 3" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-          <div class="feature-text"><h3>Seguimiento automático</h3><p>Vuelve a escribir a quien no avanzó — y se detiene solo cuando confirma su registro.</p></div>
+          <div class="feature-text"><h3>Seguimiento automático</h3><p>Vuelve a escribirle solo a quien no avanzó, en el momento justo — y se detiene solo en cuanto confirma su registro.</p></div>
         </div>
         <div class="feature">
           <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2.1"/><path d="M12 7v5l3 3" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"/></svg></div>
-          <div class="feature-text"><h3>Monitor en tiempo real</h3><p>Cada conversación llega a tu grupo privado apenas sucede.</p></div>
+          <div class="feature-text"><h3>Monitor en tiempo real</h3><p>Cada conversación llega a tu grupo privado apenas sucede — nunca te enteras tarde de lo que pasó en tu canal.</p></div>
         </div>
         <div class="feature">
           <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 3v18h18M8 17V10m5 7V6m5 11v-4" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-          <div class="feature-text"><h3>Reporte diario</h3><p>Un resumen automático a la hora que elijas, sin que lo tengas que pedir.</p></div>
+          <div class="feature-text"><h3>Reporte diario</h3><p>Un resumen de tu día te llega solo, a la hora que elijas — sin que tengas que perseguirlo ni pedirlo.</p></div>
+        </div>
+        <div class="feature">
+          <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="3" width="7" height="9" rx="1.6" stroke="currentColor" stroke-width="2.1"/><rect x="14" y="3" width="7" height="5" rx="1.6" stroke="currentColor" stroke-width="2.1"/><rect x="14" y="12" width="7" height="9" rx="1.6" stroke="currentColor" stroke-width="2.1"/><rect x="3" y="16" width="7" height="5" rx="1.6" stroke="currentColor" stroke-width="2.1"/></svg></div>
+          <div class="feature-text"><h3>Dashboard centralizado</h3><p>Todos tus prospectos en un solo lugar, con el embudo completo de conversión y el estado real de cada uno — sin perseguir información dispersa en tus chats.</p></div>
+        </div>
+        <div class="feature">
+          <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 3v18h18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M7 15l3.5-4 3 2.5L18 8" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="18" cy="8" r="1.8" fill="currentColor"/></svg></div>
+          <div class="feature-text"><h3>Análisis de métricas</h3><p>Sabes cuántos prospectos entran, en qué etapa se quedan y qué está funcionando de verdad — decisiones con datos, no con intuición.</p></div>
         </div>
       </div>
     </div>
@@ -506,20 +529,28 @@
     <div class="wrap">
       <div class="section-head">
         <span class="eyebrow">Precio, sin sorpresas</span>
-        <h2>Planes desde $50 USD, a la medida de tu canal</h2>
+        <h2>Planes desde $150 USD, a la medida de tu canal</h2>
       </div>
       <div class="pricing-grid">
         <div class="price-card">
           <div class="price-tag">Implementación</div>
-          <div class="price-amount">Desde $50<span> USD · pago único</span></div>
+          <div class="price-amount">Desde $150<span> USD · pago único</span></div>
           <p class="price-note">Puesta en marcha completa de tu bot, calibrado con tu voz y tu formulario, incluyendo 2 tandas de ajustes. El valor final depende de los servicios adicionales que sumes.</p>
           <a href="https://t.me/botmentorsupport" target="_blank" rel="noopener" class="btn btn-ghost-dark">Empezar ahora</a>
         </div>
         <div class="price-card featured">
           <div class="price-tag">Suscripción mensual</div>
-          <div class="price-amount">Desde $50<span> USD / mes</span></div>
-          <p class="price-note">Tu bot activo, alojado y funcionando todos los días del mes. Puedes ir sumando funciones adicionales a medida que tu canal crece.</p>
+          <div class="price-amount">Desde $100<span> USD / mes</span></div>
+          <p class="price-note">Tu bot activo, alojado y funcionando todos los días del mes, con dashboard y métricas incluidos. Puedes ir sumando funciones adicionales a medida que tu canal crece.</p>
           <a href="https://t.me/botmentorsupport" target="_blank" rel="noopener" class="btn btn-primary">Quiero mi bot</a>
+        </div>
+      </div>
+
+      <div class="addon-card">
+        <div class="addon-tag">Addon opcional</div>
+        <div class="addon-body">
+          <h3>Contact Center <span class="addon-price">+$27 USD/mes</span></h3>
+          <p>Responde a tus prospectos y revisa cada conversación completa directo desde tu dashboard, sin cambiar de pantalla. Ideal cuando tu canal crece y ya no alcanzas a estar en todos lados a la vez.</p>
         </div>
       </div>
     </div>
@@ -554,7 +585,7 @@
         </a>
       </div>
     </div>
-    <p class="footer-note">© 2026 BotMentor · Bots de Telegram con IA para gestores de comunidades y empresas con amplias audiencias.</p>
+    <p class="footer-note">© 2026 BotMentor · Bots con IA para gestores de comunidades y empresas con amplias audiencias.</p>
   </div>
 </footer>
 
