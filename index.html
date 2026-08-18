@@ -56,10 +56,12 @@
 
   /* ---------- NAV ---------- */
   header{
-    position:sticky;top:0;z-index:50;background:transparent;border-bottom:1px solid transparent;
-    transition:background-color .25s ease,border-color .25s ease;
+    position:sticky;top:0;z-index:50;
+    background:rgba(30,14,63,var(--nav-fade,0));
+    border-bottom:1px solid rgba(255,255,255,calc(var(--nav-fade,0) * .08));
+    backdrop-filter:blur(calc(var(--nav-fade,0) * 10px));
+    -webkit-backdrop-filter:blur(calc(var(--nav-fade,0) * 10px));
   }
-  header.nav-scrolled{background:var(--violeta-noche);border-bottom-color:rgba(255,255,255,.08);}
   nav{display:flex;align-items:center;justify-content:space-between;padding:14px 0;flex-wrap:wrap;gap:12px;}
   .logo{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:19px;display:flex;align-items:center;gap:8px;}
   .logo-mark{width:32px;height:32px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
@@ -111,7 +113,7 @@
 
   /* ---------- HERO ---------- */
   .hero{padding:88px 0 104px;position:relative;background:var(--violeta-noche);overflow:hidden;}
-  .hero-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:48px;align-items:center;position:relative;z-index:1;}
+  .hero-grid{display:grid;grid-template-columns:.92fr 1.18fr;gap:32px;align-items:center;position:relative;z-index:1;}
   .hero h1{font-size:clamp(38px,5.4vw,64px);line-height:1.03;margin:20px 0 22px;}
   .hero h1 em{font-style:normal;background:linear-gradient(100deg,var(--naranja) 30%,#FFA36B 60%,var(--naranja) 90%);-webkit-background-clip:text;background-clip:text;color:transparent;}
   .hero p.lead{font-size:18.5px;line-height:1.62;color:var(--texto-suave);max-width:480px;margin-bottom:30px;}
@@ -123,42 +125,42 @@
 
   /* ---- hero visual: telegram mock + estadísticas al lado ---- */
   .hero-visual{
-    display:flex;align-items:center;justify-content:center;gap:20px;flex-wrap:wrap;
-    max-width:520px;margin:0 auto;
+    display:flex;align-items:center;justify-content:center;gap:22px;flex-wrap:wrap;
+    max-width:640px;margin:0 auto;
   }
-  .stats-col{display:flex;flex-direction:column;gap:12px;flex:0 1 168px;}
+  .stats-col{display:flex;flex-direction:column;gap:14px;flex:0 1 186px;}
   .stat-chip{
-    display:flex;align-items:center;gap:10px;
+    display:flex;align-items:center;gap:11px;
     background:linear-gradient(155deg,#F7F3E3,#E3ECDD);
-    border:1px solid rgba(36,22,64,.08);border-radius:var(--bubble);padding:11px 13px;
+    border:1px solid rgba(36,22,64,.08);border-radius:var(--bubble);padding:13px 16px;
     box-shadow:0 10px 22px rgba(20,10,40,.22);
     opacity:0;transform:translateY(8px);animation:chipIn .5s ease forwards;
   }
-  .stat-icon{width:32px;height:32px;border-radius:9px;background:rgba(255,107,53,.16);color:var(--naranja);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-  .stat-icon svg{width:16px;height:16px;}
-  .stat-num{font-family:'Space Grotesk';font-weight:700;font-size:17px;line-height:1.1;color:var(--texto-oscuro);}
-  .stat-label{font-size:11px;color:var(--texto-suave-oscuro);line-height:1.28;margin-top:1px;}
+  .stat-icon{width:38px;height:38px;border-radius:10px;background:rgba(255,107,53,.16);color:var(--naranja);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .stat-icon svg{width:19px;height:19px;}
+  .stat-num{font-family:'Space Grotesk';font-weight:700;font-size:20px;line-height:1.1;color:var(--texto-oscuro);}
+  .stat-label{font-size:12.5px;color:var(--texto-suave-oscuro);line-height:1.28;margin-top:2px;}
   .stat-chip:nth-child(1){animation-delay:.7s;}
   .stat-chip:nth-child(2){animation-delay:1s;}
   .stat-chip:nth-child(3){animation-delay:1.3s;}
   @keyframes chipIn{to{opacity:1;transform:translateY(0);}}
   .stats-note{flex:1 1 100%;text-align:center;font-size:11.5px;color:rgba(255,255,255,.4);margin-top:6px;}
 
-  .phone{position:relative;width:100%;max-width:270px;flex:0 0 auto;}
-  .phone-glow{position:absolute;inset:-24px;background:radial-gradient(circle at 50% 30%, rgba(255,107,53,.2), transparent 65%);filter:blur(10px);z-index:0;}
-  .phone-frame{position:relative;z-index:1;background:#100823;border:1px solid rgba(255,255,255,.1);border-radius:24px;padding:9px;box-shadow:0 26px 60px rgba(0,0,0,.5);}
+  .phone{position:relative;width:100%;max-width:320px;flex:0 0 auto;}
+  .phone-glow{position:absolute;inset:-28px;background:radial-gradient(circle at 50% 30%, rgba(255,107,53,.22), transparent 65%);filter:blur(12px);z-index:0;}
+  .phone-frame{position:relative;z-index:1;background:#100823;border:1px solid rgba(255,255,255,.1);border-radius:28px;padding:10px;box-shadow:0 30px 70px rgba(0,0,0,.5);}
   .phone-screen{
     background:linear-gradient(165deg,#F1EDD6 0%,#DEE3C4 35%,#C0D2B4 65%,#9FBE9C 100%);
-    border-radius:16px;padding:16px 14px 14px;min-height:380px;display:flex;flex-direction:column;
+    border-radius:19px;padding:19px 17px 17px;min-height:440px;display:flex;flex-direction:column;
   }
-  .phone-head{display:flex;align-items:center;gap:9px;padding-bottom:12px;margin-bottom:14px;border-bottom:1px solid rgba(36,22,64,.12);}
-  .phone-avatar{width:32px;height:32px;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(36,22,64,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-  .phone-avatar svg{width:22px;height:22px;}
-  .phone-head-name{font-size:13.5px;font-weight:600;color:var(--texto-oscuro);}
-  .phone-head-status{font-size:11.5px;color:#2F7D4F;display:flex;align-items:center;gap:5px;font-weight:500;}
+  .phone-head{display:flex;align-items:center;gap:10px;padding-bottom:14px;margin-bottom:16px;border-bottom:1px solid rgba(36,22,64,.12);}
+  .phone-avatar{width:38px;height:38px;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(36,22,64,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .phone-avatar svg{width:26px;height:26px;}
+  .phone-head-name{font-size:15.5px;font-weight:600;color:var(--texto-oscuro);}
+  .phone-head-status{font-size:13px;color:#2F7D4F;display:flex;align-items:center;gap:5px;font-weight:500;}
   .phone-head-status::before{content:"";width:6px;height:6px;border-radius:50%;background:#22C55E;}
-  .phone-msgs{flex:1;display:flex;flex-direction:column;gap:9px;justify-content:flex-end;}
-  .msg{max-width:85%;padding:9px 12px;border-radius:13px;font-size:13.5px;line-height:1.42;opacity:0;transform:translateY(8px);animation-fill-mode:forwards;}
+  .phone-msgs{flex:1;display:flex;flex-direction:column;gap:10px;justify-content:flex-end;}
+  .msg{max-width:85%;padding:11px 14px;border-radius:14px;font-size:15px;line-height:1.44;opacity:0;transform:translateY(8px);animation-fill-mode:forwards;}
   .msg.in{align-self:flex-start;background:rgba(255,255,255,.88);border-bottom-left-radius:4px;color:var(--texto-oscuro);box-shadow:0 2px 6px rgba(36,22,64,.08);}
   .msg.out{align-self:flex-end;background:linear-gradient(135deg,var(--naranja),#ff8657);border-bottom-right-radius:4px;color:#fff;font-weight:500;box-shadow:0 2px 8px rgba(255,107,53,.3);}
   .msg-meta{display:flex;align-items:center;gap:3px;font-size:9.5px;font-weight:400;color:rgba(255,255,255,.85);margin-top:4px;justify-content:flex-end;}
@@ -226,7 +228,7 @@
     .steps{grid-template-columns:repeat(5,1fr);}
     .steps::before{
       content:"";position:absolute;top:18px;left:18px;right:18px;height:2px;
-      background:linear-gradient(90deg, var(--naranja), var(--violeta-medio) 50%, var(--naranja));
+      background:linear-gradient(90deg, var(--naranja), var(--violeta-medio));
       opacity:.4;z-index:0;
     }
   }
@@ -237,6 +239,12 @@
     display:flex;align-items:center;justify-content:center;margin-bottom:16px;
     box-shadow:0 0 0 6px var(--violeta-noche),0 6px 14px rgba(255,107,53,.35);
   }
+  /* El último paso se marca como destino (check, no número) — para que el
+     camino se lea como completo en vez de seguir indefinidamente. */
+  .step:last-child .step-num{
+    background:var(--violeta-medio);box-shadow:0 0 0 6px var(--violeta-noche),0 6px 14px rgba(124,58,237,.4);
+  }
+  .step:last-child .step-num svg{width:16px;height:16px;}
   .step h3{font-size:16.5px;font-weight:600;font-family:'Inter';margin-bottom:7px;}
   .step p{font-size:14.5px;line-height:1.55;color:var(--texto-suave);}
 
@@ -364,13 +372,13 @@
   @media (max-width:900px){.cc-grid{grid-template-columns:1fr;}.cc-window-wrap{margin-top:8px;}}
 
   /* ---------- STATEMENT ---------- */
-  .statement{padding:80px 0;background:var(--lavanda);text-align:center;position:relative;overflow:hidden;color:var(--texto-oscuro);}
+  .statement{padding:86px 0;background:var(--violeta-medio);text-align:center;position:relative;overflow:hidden;}
   .statement .wrap{position:relative;z-index:1;}
   .statement-text{
-    font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:clamp(24px,3.6vw,40px);
-    line-height:1.32;color:rgba(36,22,64,.4);max-width:800px;margin:0 auto;
+    font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:clamp(26px,3.6vw,42px);
+    line-height:1.3;color:var(--blanco);max-width:720px;margin:0 auto;
   }
-  .statement-text span{color:var(--violeta-medio);}
+  .statement-text span{color:var(--naranja);}
 
   /* ---------- FINAL CTA ---------- */
   .final-cta{text-align:center;padding:104px 0 90px;}
@@ -585,7 +593,7 @@
           <p>Se integra a tu canal, con accesos y seguimiento automático.</p>
         </div>
         <div class="step">
-          <div class="step-num">5</div>
+          <div class="step-num"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 12l4 4 10-10" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
           <h3>Queda listo</h3>
           <p>Tu bot funcionando 24/7 — listo para ti en menos de 7 días.</p>
         </div>
@@ -711,10 +719,8 @@
 
   <!-- STATEMENT -->
   <section class="statement">
-    <div class="mesh mesh-light"></div>
-    <div class="grain"></div>
     <div class="wrap">
-      <p class="statement-text reveal">Menos tiempo respondiendo lo mismo. <span>Más tiempo haciendo crecer tu comunidad.</span></p>
+      <p class="statement-text reveal">Cada mensaje respondido a tiempo es un prospecto que <span>no se enfría.</span></p>
     </div>
   </section>
 
@@ -807,14 +813,16 @@
 
 <script>
   // El header arranca transparente sobre el hero (mismo fondo, sin corte de
-  // color) y se vuelve sólido apenas se empieza a scrollear, para que siga
-  // siendo legible sobre el resto de las secciones.
+  // color) y se va volviendo sólido de forma gradual a medida que se
+  // scrollea — un fundido continuo en vez de un salto brusco a los 40px,
+  // para que el blend con el hero se sienta intencional.
   var headerEl = document.querySelector('header');
-  function toggleHeaderBg() {
-    headerEl.classList.toggle('nav-scrolled', window.scrollY > 40);
+  function updateHeaderFade() {
+    var fade = Math.min(window.scrollY / 220, 1);
+    headerEl.style.setProperty('--nav-fade', fade.toFixed(3));
   }
-  toggleHeaderBg();
-  window.addEventListener('scroll', toggleHeaderBg, { passive: true });
+  updateHeaderFade();
+  window.addEventListener('scroll', updateHeaderFade, { passive: true });
 
   // Revela secciones al hacer scroll — respeta prefers-reduced-motion mostrando
   // todo directo, sin animar, en vez de dejar contenido invisible para quien
