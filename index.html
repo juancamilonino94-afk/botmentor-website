@@ -816,6 +816,21 @@
 </footer>
 
 <script>
+  // Programa de referidos: si alguien llega con ?ref=<client_id> (el link
+  // que cada mentor comparte desde su dashboard), no hay formulario de alta
+  // self-service donde adjuntarlo — todo el onboarding es por contacto
+  // directo con soporte. Así que en vez de "trackear" el signup acá, se
+  // prellena el mensaje del link de Telegram con el código de referido,
+  // para que el equipo lo vea y lo registre al dar de alta al cliente nuevo.
+  (function () {
+    const ref = new URLSearchParams(window.location.search).get('ref');
+    if (!ref) return;
+    const text = encodeURIComponent(`Vengo referido por: ${ref}`);
+    document.querySelectorAll('a[href^="https://t.me/botmentorsupport"]').forEach(a => {
+      a.href = `https://t.me/botmentorsupport?text=${text}`;
+    });
+  })();
+
   // El header es fixed (flota sobre el hero de verdad, no solo transparente
   // en el flujo normal) — así el degradado del hero se ve "a través" de él
   // desde el primer pixel. El hero compensa con padding-top igual a la
